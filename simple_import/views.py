@@ -1,11 +1,12 @@
 from django import forms
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.admin.models import LogEntry, ADDITION, CHANGE
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib import messages
 from django.conf import settings
 from django.core.exceptions import SuspiciousOperation
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q, ForeignKey
 from django.db import transaction, IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
@@ -66,8 +67,7 @@ def validate_match_columns(import_log, model_class, header_row):
                     errors += [u"{0} is required but has no match.".format(field_object.verbose_name.title())]
     return errors
 
-
-@staff_member_required
+@login_required()
 def match_columns(request, import_log_id):
     """ View to match import spreadsheet columns with database fields
     """
@@ -134,7 +134,7 @@ def match_columns(request, import_log_id):
                     all_field_names += [clean_data['field_name']]
             if not errors:
                 return HttpResponseRedirect(reverse(
-                    match_relations,
+                    'simple_import:simple_import-match_relations',
                     kwargs={'import_log_id': import_log.id}))
     else:
         formset = MatchFormSet(instance=import_log.import_setting, queryset=existing_matches)
@@ -246,7 +246,7 @@ def match_relations(request, import_log_id):
         if formset.is_valid():
             formset.save()
 
-            url = reverse('simple_import-do_import',
+            url = reverse('simple_import:simple_import-do_import',
                 kwargs={'import_log_id': import_log.id})
 
             if 'commit' in request.POST:
@@ -315,14 +315,13 @@ def set_method_from_cell(import_log, new_object, header_row_field_name, cell):
         getattr(new_object, header_row_field_name[22:])(cell)
 
 
-@staff_member_required
 def do_import(request, import_log_id):
     """ Import the data! """
     import_log = get_object_or_404(ImportLog, id=import_log_id)
     if import_log.import_type == "N" and 'undo' in request.GET and request.GET['undo'] == "True":
         import_log.undo()
         return HttpResponseRedirect(reverse(
-                    do_import,
+                    'simple_import:simple_import-do_import',
                     kwargs={'import_log_id': import_log.id}) + '?success_undo=True')
 
     if 'success_undo' in request.GET and request.GET['success_undo'] == "True":
@@ -477,8 +476,7 @@ def do_import(request, import_log_id):
             'success_undo': success_undo,},
     )
 
-
-@staff_member_required
+@login_required()
 def start_import(request):
     """ View to create a new import record
     """
@@ -492,7 +490,9 @@ def start_import(request):
                 content_type=form.cleaned_data['model'],
             )
             import_log.save()
-            return HttpResponseRedirect(reverse(match_columns, kwargs={'import_log_id': import_log.id}))
+            return HttpResponseRedirect(reverse(
+                'simple_import:simple_import-match_columns',
+                kwargs={'import_log_id': import_log.id}))
     else:
         form = ImportForm()
     if not request.user.is_superuser:

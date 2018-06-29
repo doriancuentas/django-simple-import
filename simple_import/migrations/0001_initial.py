@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
                 ('object_id', models.IntegerField()),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=models.DO_NOTHING)),
             ],
         ),
         migrations.CreateModel(
@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
             name='ImportSetting',
             fields=[
                 ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
-                ('content_type', models.ForeignKey(to='contenttypes.ContentType')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('content_type', models.ForeignKey(to='contenttypes.ContentType', on_delete=models.DO_NOTHING)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING)),
             ],
         ),
         migrations.CreateModel(
@@ -58,28 +58,28 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(serialize=False, verbose_name='ID', auto_created=True, primary_key=True)),
                 ('field_name', models.CharField(max_length=255)),
                 ('related_field_name', models.CharField(blank=True, max_length=255)),
-                ('import_log', models.ForeignKey(to='simple_import.ImportLog')),
+                ('import_log', models.ForeignKey(to='simple_import.ImportLog', on_delete=models.DO_NOTHING)),
             ],
         ),
         migrations.AddField(
             model_name='importlog',
             name='import_setting',
-            field=models.ForeignKey(to='simple_import.ImportSetting', editable=False),
+            field=models.ForeignKey(to='simple_import.ImportSetting', on_delete=models.DO_NOTHING, editable=False),
         ),
         migrations.AddField(
             model_name='importlog',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='simple_import_log', editable=False),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.DO_NOTHING, related_name='simple_import_log', editable=False),
         ),
         migrations.AddField(
             model_name='importedobject',
             name='import_log',
-            field=models.ForeignKey(to='simple_import.ImportLog'),
+            field=models.ForeignKey(to='simple_import.ImportLog', on_delete=models.DO_NOTHING),
         ),
         migrations.AddField(
             model_name='columnmatch',
             name='import_setting',
-            field=models.ForeignKey(to='simple_import.ImportSetting'),
+            field=models.ForeignKey(to='simple_import.ImportSetting', on_delete=models.DO_NOTHING),
         ),
         migrations.AlterUniqueTogether(
             name='importsetting',
