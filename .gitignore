@@ -6,3 +6,5 @@ django_simple_import.egg-info/
 *.egg/
 pep8.txt
 import_file/
+./build/lib/simple_import/migrations/0001_initial.py  
+/venv

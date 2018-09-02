@@ -167,7 +167,7 @@ class ImportLog(models.Model):
         elif file_ext == "lsx":
             from openpyxl.reader.excel import load_workbook
             # load_workbook actually accepts a file-like object for the filename param
-            wb = load_workbook(filename=self.import_file, use_iterators=True)
+            wb = load_workbook(filename=self.import_file, read_only=True)
             sheet = wb.get_active_sheet()
             for row in sheet.iter_rows():
                 data_row = []

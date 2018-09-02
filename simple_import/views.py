@@ -20,8 +20,7 @@ from django.utils.encoding import smart_text
 from django.contrib.auth import get_user_model
 User = get_user_model()
 
-from .models import (ImportLog, ImportSetting, ColumnMatch,
-                                  ImportedObject, RelationalMatch)
+from .models import (ImportLog, ImportSetting, ColumnMatch, ImportedObject, RelationalMatch)
 from .forms import ImportForm, MatchForm, MatchRelationForm
 from .utils import get_all_field_names
 
@@ -281,7 +280,7 @@ def set_field_from_cell(import_log, new_object, header_row_field_name, cell):
                 import_log=import_log,
                 field_name=field.name,
             ).related_field_name
-            related_model = field.remote_field.parent_model
+            related_model = field.remote_field.model
             related_object = related_model.objects.get(**{related_field_name:cell})
             setattr(new_object, header_row_field_name, related_object)
         elif field.choices and getattr(settings, 'SIMPLE_IMPORT_LAZY_CHOICES', True):
