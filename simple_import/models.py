@@ -4,6 +4,8 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.exceptions import ValidationError
 from django.db import models, transaction
 from django.utils.encoding import smart_text
+from setuptools.command.develop import develop
+
 from .utils import get_all_field_names
 import csv
 import datetime
@@ -30,6 +32,7 @@ class ColumnMatch(models.Model):
         default=False,
         help_text="If cell is blank, clear out the field setting it to blank.")
     header_position = models.IntegerField(
+        default=0,
         help_text="Annoying way to order the columns to match the header rows")
 
     class Meta:
